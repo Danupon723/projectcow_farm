@@ -5,6 +5,7 @@ import Register from "./view/register.vue";
 
 import Layout from "./view/admin/layoute.vue";
 import AdminDashboard from "./view/admin/dashbord.vue";
+import AdminCows from "./view/admin/cow.vue";
 
 const routes = [
   { path: "/",name: "login", component: Login},
@@ -16,7 +17,8 @@ const routes = [
     meta: { requiresAuth: true },
     children: [
       { path: "", redirect: "/admin/dashboard" },
-      { path: "dashboard",  name: "admin-dashboard",  component: AdminDashboard}
+      { path: "dashboard",  name: "admin-dashboard",  component: AdminDashboard},
+      { path: "cows",  name: "admin-cows",  component: AdminCows},
     ]
   }
 ];

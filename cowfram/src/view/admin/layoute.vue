@@ -50,13 +50,13 @@
         <v-list-item
           prepend-icon="mdi-view-dashboard"
           title="แดชบอร์ด"
-          @click="go('/admin/dashbord')"
+          @click="go('dashboard')"
         />
 
         <v-list-item
           prepend-icon="mdi-cow"
           title="จัดการโค"
-          @click="go('/admin/cows')"
+          @click="go('cows')"
         />
 
         <v-list-item
