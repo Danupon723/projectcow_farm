@@ -169,12 +169,12 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue';
-import router from '../router';
+import { ref, reactive } from 'vue'
+import router from '../router'
 
-const registerForm = ref(null);
-const loading = ref(false);
-const showPass = ref(false);
+const registerForm = ref(null)
+const loading = ref(false)
+const showPass = ref(false)
 
 const regData = reactive({
   firstName: '',
@@ -184,27 +184,43 @@ const regData = reactive({
   password: '',
   confirmPassword: '',
   agree: false
-});
+})
 
 const handleRegister = async () => {
-  const { valid } = await registerForm.value.validate();
-  if (!valid) return;
+  const { valid } = await registerForm.value.validate()
+  if (!valid) return
 
-  loading.value = true;
-  
-  // จำลองการเชื่อมต่อ API
-  setTimeout(() => {
-    loading.value = false;
-    alert('ลงทะเบียนสำเร็จ! ยินดีต้อนรับเข้าสู่ครอบครัวฟาร์มวัวนม');
-  }, 1500);
-};
+  loading.value = true
+
+  try {
+    // ==========================
+    // จำลองเรียก API สมัครสมาชิก
+    // ==========================
+    await new Promise(resolve => setTimeout(resolve, 1500))
+
+    // สมมติว่า backend ส่ง token กลับมา
+    const fakeToken = 'farm_token_' + Date.now()
+
+    // เก็บ token
+    localStorage.setItem('token', fakeToken)
+
+    alert('ลงทะเบียนสำเร็จ! ยินดีต้อนรับเข้าสู่ระบบฟาร์ม 🐄')
+
+    // พาเข้า dashboard
+    router.push('/admin/dashbord')
+  } catch (err) {
+    alert('เกิดข้อผิดพลาดในการสมัครสมาชิก')
+    console.error(err)
+  } finally {
+    loading.value = false
+  }
+}
 
 const goToLogin = () => {
-  // ฟังก์ชันย้อนกลับไปหน้า Login
-  router.push('/');
-  console.log('Navigate to Login');
-};
+  router.push('/')
+}
 </script>
+
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700&display=swap');

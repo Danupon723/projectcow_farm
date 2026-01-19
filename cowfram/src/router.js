@@ -1,40 +1,40 @@
-import { createRouter,createWebHashHistory } from "vue-router";
+import { createRouter, createWebHashHistory } from "vue-router";
 
-import login from "./view/login.vue";
-import register from "./view/register.vue";
+import Login from "./view/login.vue";
+import Register from "./view/register.vue";
 
-import admindashbord from "./view/admin/dashbord.vue";
+import Layout from "./view/admin/layoute.vue";
+import AdminDashboard from "./view/admin/dashbord.vue";
 
 const routes = [
-    {path:'/' ,name:"login" , component:login},
-    {path:'/register' , name:"register" , component:register},
+  { path: "/",name: "login", component: Login},
+  {path: "/register",name: "register",component: Register },
 
-    {
-        path:'/admin',
-        component: admindashbord,
 
-        children : [
-            {path:'', redirect:'/admin/dashbord'},
-            {path:'dashbord', component:dashbord},
-            {path:'user' , component:user}
-        ],
-        meta:{requiresAuth : true}
-        
-    },
-]
+  { path: "/admin",
+    component: Layout,
+    meta: { requiresAuth: true },
+    children: [
+      { path: "", redirect: "/admin/dashboard" },
+      { path: "dashboard",  name: "admin-dashboard",  component: AdminDashboard}
+    ]
+  }
+];
 
 const router = createRouter({
-    history:createWebHashHistory(),
-    routes
-})
+  history: createWebHashHistory(),
+  routes
+});
 
-// router.beforeEach((to,from,next) =>{
-//     const token = localStorage.getItem('token')
+// Guard
+// router.beforeEach((to, from, next) => {
+//   const token = localStorage.getItem("token");
 
-//     if(to.meta.requiresAuth && !token){
-//         next('/')
-//     }else{
-//         next()
-//     }
-// })
-export default router
+//   if (to.meta.requiresAuth && !token) {
+//     next("/");
+//   } else {
+//     next();
+//   }
+// });
+
+export default router;

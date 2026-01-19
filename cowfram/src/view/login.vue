@@ -1,7 +1,17 @@
 <template>
   <v-app>
-    <v-container fluid class="pa-0 fill-height login-container">
+    <!-- ===== Cow Loader ===== -->
+    <div v-if="loading" class="cow-loader">
+      <div ref="lottieContainer" class="cow-animation"></div>
+      <p>กำลังเชื่อมต่อระบบฟาร์ม...</p>
+    </div>
+
+    <v-container
+      fluid
+      class="pa-0 fill-height login-container"
+    >
       <v-row no-gutters class="fill-height">
+        <!-- ===== LEFT SIDE ===== -->
         <v-col
           cols="12"
           md="7"
@@ -25,12 +35,12 @@
               จัดการฟาร์มวัวนม <br />
               <span class="text-highlight">อย่างมืออาชีพ</span>
             </h1>
-            
+
             <p class="text-h6 font-weight-light mb-10 opacity-90" style="line-height: 1.6;">
               ติดตามสุขภาพโค, ปริมาณน้ำนม, และจัดการตารางการให้อาหาร <br>
               เพื่อผลผลิตที่มีคุณภาพและยั่งยืนสำหรับฟาร์มของคุณ
             </p>
-            
+
             <div class="d-flex align-center mt-4">
               <div class="stat-card">
                 <div class="text-h4 font-weight-bold">Healthy</div>
@@ -43,11 +53,12 @@
               </div>
             </div>
           </div>
-          
+
           <div class="bg-shape-1"></div>
           <div class="bg-shape-2"></div>
         </v-col>
 
+        <!-- ===== RIGHT SIDE (LOGIN) ===== -->
         <v-col
           cols="12"
           md="5"
@@ -59,14 +70,25 @@
               <v-avatar color="green-darken-2" size="80" elevation="6" class="mb-4">
                 <v-icon color="white" size="45">mdi-cow</v-icon>
               </v-avatar>
-              <h2 class="text-h4 font-weight-black color-farm">Smart Dairy Farm</h2>
+              <h2 class="text-h4 font-weight-black color-farm">
+                Smart Dairy Farm
+              </h2>
             </div>
 
             <div class="mb-10">
-              <h2 class="text-h3 font-weight-bold color-farm mb-2 form-title">ยินดีต้อนรับ</h2>
+              <h2 class="text-h3 font-weight-bold color-farm mb-2 form-title">
+                ยินดีต้อนรับ
+              </h2>
               <div class="d-flex align-center">
-                <v-divider class="me-3" thickness="4" color="green-darken-1" style="width: 50px; opacity: 1;"></v-divider>
-                <p class="text-body-1 text-medium-emphasis mb-0">เข้าสู่ระบบจัดการฟาร์มของคุณ</p>
+                <v-divider
+                  class="me-3"
+                  thickness="4"
+                  color="green-darken-1"
+                  style="width: 50px; opacity: 1;"
+                />
+                <p class="text-body-1 text-medium-emphasis mb-0">
+                  เข้าสู่ระบบจัดการฟาร์มของคุณ
+                </p>
               </div>
             </div>
 
@@ -81,7 +103,7 @@
                 color="green-darken-2"
                 :rules="[v => !!v || 'กรุณากรอกข้อมูลผู้ใช้งาน']"
                 required
-              ></v-text-field>
+              />
 
               <v-text-field
                 v-model="formData.password"
@@ -95,10 +117,15 @@
                 color="green-darken-2"
                 :rules="[v => !!v || 'กรุณากรอกรหัสผ่าน']"
                 required
-              ></v-text-field>
+              />
 
               <div class="d-flex justify-end mb-8">
-                <v-btn variant="text" color="green-darken-3" size="small" class="text-none font-weight-bold">
+                <v-btn
+                  variant="text"
+                  color="green-darken-3"
+                  size="small"
+                  class="text-none font-weight-bold"
+                >
                   ลืมรหัสผ่านใช่หรือไม่?
                 </v-btn>
               </div>
@@ -118,13 +145,22 @@
               </v-btn>
 
               <div class="text-center">
-                <span class="text-body-2 text-medium-emphasis">ยังไม่เป็นสมาชิก?</span>
-                <v-btn variant="text" color="green-darken-2" router link to="/register" class="text-body-2 font-weight-bold px-2 text-none">
+                <span class="text-body-2 text-medium-emphasis">
+                  ยังไม่เป็นสมาชิก?
+                </span>
+                <v-btn
+                  variant="text"
+                  color="green-darken-2"
+                  router
+                  link
+                  to="/register"
+                  class="text-body-2 font-weight-bold px-2 text-none"
+                >
                   ติดต่อเจ้าของฟาร์ม
                 </v-btn>
               </div>
             </v-form>
-            
+
             <div class="text-center text-caption text-disabled mt-12">
               <v-icon size="x-small" class="me-1">mdi-leaf</v-icon>
               2026 Smart Dairy Farm Management. All rights reserved.
@@ -133,42 +169,65 @@
         </v-col>
       </v-row>
     </v-container>
+
+    <!-- ===== Success Overlay ===== -->
+    <div v-if="showSuccess" class="success-overlay">
+      <div class="checkmark">✓</div>
+      <p>เข้าสู่ระบบสำเร็จ!</p>
+    </div>
   </v-app>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import axios from 'axios';
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
+import lottie from 'lottie-web'
 
-const loginForm = ref(null);
-const showPassword = ref(false);
-const loading = ref(false);
+const lottieContainer = ref(null)
+const showSuccess = ref(false)
+
+const loginForm = ref(null)
+const showPassword = ref(false)
+const loading = ref(false)
 
 const formData = ref({
   email: '',
   password: ''
-});
+})
 
-const API_URL = 'http://localhost:7000/api/auth';
+const API_URL = 'http://localhost:7000/api/auth'
 
 const handleLogin = async () => {
-  const { valid } = await loginForm.value.validate();
-  if (!valid) return;
+  const { valid } = await loginForm.value.validate()
+  if (!valid) return
 
-  loading.value = true;
+  loading.value = true
   try {
-    const res = await axios.post(`${API_URL}/login`, formData.value);
+    const res = await axios.post(`${API_URL}/login`, formData.value)
     if (res.data.success || res.data.token) {
-      alert('เข้าสู่ระบบสำเร็จ กำลังพาคุณไปยังหน้าจัดการฟาร์ม');
+      showSuccess.value = true
+      setTimeout(() => {
+        window.location.href = '/#/admin'
+      }, 1500)
     } else {
-      alert(res.data.message || 'อีเมลหรือรหัสผ่านไม่ถูกต้อง');
+      alert(res.data.message || 'อีเมลหรือรหัสผ่านไม่ถูกต้อง')
     }
   } catch (err) {
-    alert(err.response?.data?.message || 'ไม่สามารถเชื่อมต่อระบบฟาร์มได้ในขณะนี้');
+    alert(err.response?.data?.message || 'ไม่สามารถเชื่อมต่อระบบฟาร์มได้ในขณะนี้')
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-};
+}
+
+onMounted(() => {
+  lottie.loadAnimation({
+    container: lottieContainer.value,
+    renderer: 'svg',
+    loop: true,
+    autoplay: true,
+    path: 'https://assets2.lottiefiles.com/packages/lf20_jcikwtux.json'
+  })
+})
 </script>
 
 <style scoped>
@@ -179,7 +238,7 @@ const handleLogin = async () => {
   background-color: #f9fbf9;
 }
 
-/* ปรับสีพื้นหลังฝั่งซ้ายเป็นโทนเขียวฟาร์ม/ธรรมชาติ */
+/* ===== LEFT SIDE BACKGROUND ===== */
 .welcome-section {
   background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 50%, #43a047 100%);
   position: relative;
@@ -187,14 +246,12 @@ const handleLogin = async () => {
 }
 
 .text-highlight {
-  color: #fff200; /* สีเหลืองทองแบบทุ่งหญ้า/แสงแดด */
   background: linear-gradient(to right, #fff200, #a8e063);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: 800;
 }
 
-/* กราฟิกทรงอินทรีย์ (Organic Shapes) */
 .bg-shape-1 {
   position: absolute;
   width: 800px;
@@ -203,6 +260,7 @@ const handleLogin = async () => {
   border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
   top: -150px;
   left: -150px;
+  animation: floatGlow 8s ease-in-out infinite;
 }
 
 .bg-shape-2 {
@@ -213,6 +271,13 @@ const handleLogin = async () => {
   border-radius: 50%;
   bottom: -100px;
   right: -50px;
+  animation: floatGlow 10s ease-in-out infinite;
+}
+
+@keyframes floatGlow {
+  0% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-20px) scale(1.05); }
+  100% { transform: translateY(0) scale(1); }
 }
 
 .color-farm {
@@ -239,8 +304,66 @@ const handleLogin = async () => {
   letter-spacing: 1px;
 }
 
-/* ปรับแต่ง Input Field ให้ดูโค้งมนเข้ากับธีม */
+/* Input Rounded */
 :deep(.v-field--variant-outlined) {
   border-radius: 12px !important;
+}
+
+/* ===== Cow Loader ===== */
+.cow-loader {
+  position: fixed;
+  inset: 0;
+  background: rgba(27, 94, 32, 0.95);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  color: white;
+  font-size: 1.2rem;
+  animation: fadeIn 0.3s ease;
+}
+
+.cow-animation {
+  width: 200px;
+  height: 200px;
+  margin-bottom: 20px;
+}
+
+/* ===== Success Overlay ===== */
+.success-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  color: white;
+  animation: fadeIn 0.3s ease;
+}
+
+.checkmark {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: #43a047;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  animation: pop 0.6s ease;
+}
+
+@keyframes pop {
+  0% { transform: scale(0); }
+  80% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 </style>
